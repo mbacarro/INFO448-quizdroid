@@ -15,6 +15,7 @@ class QuestionActivity : AppCompatActivity() {
     private var currentQuestionIndex = 0
     private var correctAnswersTotal = 0
     private val TAG: String = "TopicsOverviewActivity"
+    lateinit var topicRepository: TopicRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,29 +23,35 @@ class QuestionActivity : AppCompatActivity() {
 
         Log.i(TAG, "Question Activity was launched")
 
-        currentQuestionIndex = intent.getIntExtra("currentQuestionIndex", 0)
-        correctAnswersTotal = intent.getIntExtra("correctAnswersTotal", 0)
-
-
-        var questions = intent.getStringArrayListExtra("questions")
-        val questNum = questions?.size
-        Log.i(TAG, "Question: $questions")
-
-        val currentQuestion = Gson().fromJson(questions!![currentQuestionIndex], Map::class.java) as Map<String, Any>
-        var answerIndex = currentQuestion["correctAnswerIndex"]
-        Log.i(TAG, "Current Question: $currentQuestion")
-        Log.i(TAG, "Correct Index: $answerIndex")
-
         val answerGroup = findViewById<RadioGroup>(R.id.answer_group)
         val submitButton = findViewById<Button>(R.id.submit_button)
 
-        if (questions != null && currentQuestionIndex < questions!!.size) {
-            displayQuestion(currentQuestionIndex, questions)
 
+        currentQuestionIndex = intent.getIntExtra("currentQuestionIndex", 0)
+        correctAnswersTotal = intent.getIntExtra("correctAnswersTotal", 0)
+        Log.i(TAG, "Current Index: ${currentQuestionIndex} and Current Correct: $correctAnswersTotal")
+
+        val topic = intent.getStringExtra("topic")
+        topicRepository = (application as QuizApp).topicRepository
+
+        val topicDetails = topicRepository.getTopicByTitle(topic)
+
+        Log.i(TAG, "Current Set of Questions: ${topicDetails?.questions}")
+        Log.i(TAG, "Number of Questions: ${topicDetails?.questions?.size}")
+
+
+
+        if (topicDetails != null && currentQuestionIndex < topicDetails.questions.size) {
+            displayQuestion(topicDetails, currentQuestionIndex)
+            val currentQuestion = topicDetails?.questions?.get(currentQuestionIndex)
+
+            Log.i(TAG, "Correct Index: ${currentQuestion?.correctAnswerIndex}")
+
+            // Log the selected answer's ID when it changes
             answerGroup.setOnCheckedChangeListener { group, checkedId ->
-                // Log the selected answer's ID when it changes
                 Log.i(TAG, "Selected Answer ID: $checkedId")
             }
+
 
             submitButton.setOnClickListener {
                 var selectedAnswerIndex = answerGroup.checkedRadioButtonId
@@ -55,64 +62,44 @@ class QuestionActivity : AppCompatActivity() {
 
                     return@setOnClickListener
                 }
-                // convert to double to check with correct answer
-                var selectedAnswerDouble = selectedAnswerIndex.toDouble()
-                var correct = (selectedAnswerDouble == answerIndex)
-                Log.i(TAG, "Selected Answer ID on Button Press: $selectedAnswerDouble")
-                Log.i(TAG, "Correct index = $answerIndex")
-                Log.i(TAG, "Is correct: $correct")
-
+                var correct = (selectedAnswerIndex == currentQuestion?.correctAnswerIndex )
                 if (correct) {
                     correctAnswersTotal++
                 }
 
-                // display the answer user gave
-                val answers = currentQuestion["answers"] as List<String>
-                val userSelectedAnswer = answers[selectedAnswerIndex]
-                Log.i(TAG, "User selected: $userSelectedAnswer")
-                // the correct answer
-
-                val correctAnswer = answers[answerIndex.toString().toDouble().toInt()]
-                Log.i(TAG, "Correct Answer: $correctAnswer")
-
-                // current score (correct / incorrect)
-                Log.i(TAG, "Current Score: $correctAnswersTotal out of $questNum")
-
-                // next button
-
-
                 val intent = Intent(this, AnswerActivity::class.java).apply {
-                    putExtra("userSelectedAnswer", userSelectedAnswer)
-                    putExtra("correctAnswer", correctAnswer)
+                    putExtra("selectedAnswerIndex", selectedAnswerIndex)
+                    putExtra("topic", topic)
                     putExtra("correctAnswersTotal", correctAnswersTotal)
                     putExtra("currentQuestionIndex", currentQuestionIndex)
-
-                    putExtra("questNum", questNum)
-
-                    putStringArrayListExtra("questions", questions)
-
-
                 }
                startActivity(intent)
+
+
             }
         }
     }
 
-    private fun displayQuestion(questionIndex: Int, questions: ArrayList<String>?) {
-        val currentQuestionMap = Gson().fromJson(questions!![questionIndex], Map::class.java) as Map<String, Any>
+    private fun displayQuestion(topicDetails: Topic?, currentQuestionIndex: Int) {
+        val currentQuestion = topicDetails?.questions?.get(currentQuestionIndex)
+
         val questionText = findViewById<TextView>(R.id.question_text)
         val answerGroup = findViewById<RadioGroup>(R.id.answer_group)
 
-        questionText.text = currentQuestionMap["question"] as String
+        if (currentQuestion != null) {
+            questionText.text = currentQuestion.question
+        }
         answerGroup.removeAllViews()
 
-        val answers = currentQuestionMap["answers"] as List<String>
+        val answers = currentQuestion?.answers
 
-        for ((index, answer) in answers.withIndex()) {
-            val radioButton = RadioButton(this)
-            radioButton.text = answer
-            radioButton.id = index
-            answerGroup.addView(radioButton)
+        if (answers != null) {
+            for ((index, answer) in answers.withIndex()) {
+                val radioButton = RadioButton(this)
+                radioButton.text = answer
+                radioButton.id = index
+                answerGroup.addView(radioButton)
+            }
         }
     }
 }

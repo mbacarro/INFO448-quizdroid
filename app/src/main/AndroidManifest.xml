@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Quizdroid"
+        android:name="edu.uw.ischool.mbacarro.quizdroid.QuizApp"
         tools:targetApi="31">
         <activity
             android:name=".AnswerActivity"
