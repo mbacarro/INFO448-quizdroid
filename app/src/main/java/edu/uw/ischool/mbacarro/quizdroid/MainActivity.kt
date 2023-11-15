@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import com.google.gson.Gson
 
@@ -43,10 +45,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     private fun startTopicOverview(topic: String?) {
         val intent = Intent(this, TopicOverviewActivity::class.java)
         intent.putExtra("topic", topic)
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_preferences -> {
+                startActivity(Intent(this, PreferencesActivity::class.java))
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

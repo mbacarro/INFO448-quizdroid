@@ -1,12 +1,12 @@
+// QuizApp.kt
 package edu.uw.ischool.mbacarro.quizdroid
 
 import android.app.Application
 import android.util.Log
 
-
 class QuizApp : Application() {
 
-    var topicRepository : TopicRepository = InMemoryTopicRepo()
+    var topicRepository: TopicRepository = JsonTopicRepo(this)
 
     private val TAG = "QuizApp"
 
