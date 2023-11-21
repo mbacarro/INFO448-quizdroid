@@ -1,0 +1,48 @@
+[
+  {
+    "title": "Math",
+    "shortDescription": "Math Quiz",
+    "longDescription": "This math quiz will consist of n math questions",
+    "questions": [
+      {
+        "question": "What is 2 + 2?",
+        "answers": ["3", "4", "5", "6"],
+        "correctAnswerIndex": 1
+      },
+      {
+        "question": "What is 2 + 3?",
+        "answers": ["3", "4", "5", "6"],
+        "correctAnswerIndex": 2
+      }
+    ]
+  },
+  {
+    "title": "Physics",
+    "shortDescription": "Physics Quiz",
+    "longDescription": "This physics quiz will consist of n physics questions",
+    "questions": [
+      {
+        "question": "What is the acceleration of gravity in m/s^2?",
+        "answers": ["7.8", "8.8", "9.8", "10.8"],
+        "correctAnswerIndex": 2
+      },
+      {
+        "question": "What is the speed of light?",
+        "answers": ["100 m/s", "299,792,458 m/s", "1,000 m/s", "50,000 m/s"],
+        "correctAnswerIndex": 1
+      }
+    ]
+  },
+  {
+    "title": "Marvel",
+    "shortDescription": "Marvel Super Heroes Quiz",
+    "longDescription": "This Marvel Super Heroes quiz will consist of n Marvel questions",
+    "questions": [
+      {
+        "question": "Who is the leader of the Avengers?",
+        "answers": ["Thor", "Hulk", "Iron Man", "Captain America"],
+        "correctAnswerIndex": 3
+      }
+    ]
+  }
+]
