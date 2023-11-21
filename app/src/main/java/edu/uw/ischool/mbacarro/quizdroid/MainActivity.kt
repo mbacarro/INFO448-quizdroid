@@ -7,7 +7,12 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
-import com.google.gson.Gson
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import java.util.Calendar
+import androidx.preference.PreferenceManager
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,6 +48,8 @@ class MainActivity : AppCompatActivity() {
             startTopicOverview("Mavel Super Heros")
         }
 
+        scheduleAlarm()
+
     }
 
     private fun startTopicOverview(topic: String?) {
@@ -64,5 +71,31 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun scheduleAlarm() {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val alarmIntent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent,
+            PendingIntent.FLAG_IMMUTABLE)
+
+        // Set the alarm to repeat every N minutes
+        val intervalMillis = getDownloadIntervalInMinutes() * 60 * 1000
+
+        // Use current time as the starting point
+        val startTime = System.currentTimeMillis()
+
+        alarmManager.setRepeating(
+            AlarmManager.RTC_WAKEUP,
+            startTime + intervalMillis, // Start after the initial interval
+            intervalMillis,
+            pendingIntent
+        )
+    }
+
+    private fun getDownloadIntervalInMinutes(): Long {
+        // Get the download interval from preferences
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        return preferences.getString("download_interval_preference", "60")?.toLong() ?: 60
     }
 }

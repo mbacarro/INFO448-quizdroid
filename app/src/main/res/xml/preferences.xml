@@ -6,7 +6,7 @@
         android:title="URL"
         android:summary="Enter the URL for question data"
         android:inputType="text"
-        android:defaultValue="http://tednewardsandbox.site44.com/questions.json"/>
+        android:defaultValue="https://raw.githubusercontent.com/mbacarro/INFO448-quizdroid/storage/app/src/main/assets/data/questions.json"/>
 
     <EditTextPreference
         android:key="download_interval_preference"
